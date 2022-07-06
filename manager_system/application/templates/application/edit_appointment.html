@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block edit_appointment %}
+    <form method='post'>
+        {% csrf_token %}
+           {% for field in form %}
+                {{ field.label }}
+                {{ field }}
+            {% endfor %}
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+{% endblock %}

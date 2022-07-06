@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+    {% if workers %}
+    <table class="table table-striped table-dark" style="margin-top: 3em;">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Surname</th>
+            <th scope="col"> <div class="btn-group dropstart">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Date | Hours
+                </button>
+                <ul class="dropdown-menu">
+                    {% for hour in hours %}
+                        <li><a class="dropdown-item" href="{{ hour.get_absolute_url }}">{{ hour }}</a></li>
+                    {% endfor %}
+                </ul>
+              </div>
+            </th>
+            <th scope="col">Price</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Details</th>
+            <th scope="col">Record</th>
+            <th scope="col"> <div class="btn-group dropstart">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      Category
+                </button>
+                <ul class="dropdown-menu">
+                    {% for category in categories %}
+                        <li><a class="dropdown-item" href="{{ category.get_absolute_url }}">{{ category }}</a></li>
+                    {% endfor %}
+                </ul>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for worker in workers %}
+                <th scope="row">{{ worker.id }}</th>
+                <td>{{ worker.name }}</td>
+                <td>{{ worker.surname }}</td>
+                <td>{{ worker.hours }}</td>
+                <td>{{ worker.price }}</td>
+                <td>{{ worker.rating }}</td>
+                <th scope="col"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_{{worker.id}}">Click</button></th>
+                <div class="modal fade" id="modal_{{worker.id}}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ worker.name }} {{ worker.surname }}</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {% if worker.image %}
+                                    <img src="{{ worker.image.url }}" class="img-thumbnail mx-auto d-block" height="250px" width="250px">
+                                {% endif %}
+                                <p>Phone: {{ worker.phone }}</p>
+                                <p>Email: {{ worker.email }}</p>
+                                <p>Address: {{ worker.address }}</p>
+                                <p>Hours: {{ worker.hours }}</p>
+                                <p>Description: {{ worker.description }}</p>
+                                <p>Rating: {{ worker.rating }}</p>
+                                <p>Reviews: {{ worker.reviews }}</p>
+                                <p>Category: {{ worker.category }}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <th scope="col"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#record_{{ worker.id }}">Record</button></th>
+                <div class="modal fade" id="record_{{ worker.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ worker.name }} {{ worker.surname }}</h5>
+                                <button type="button" class="close" data-bs-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'record' %}" method="post">
+                                    {% csrf_token %}
+                                    {{ form.non_field_errors }}
+                                    <div class="form-group">
+                                        <label>Select a category</label>
+                                        <select class="form-control" name="category">
+                                            <option value={{ worker.category }}>{{worker.category}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Select a worker</label>
+                                        <select class="form-control" name="worker">
+                                            <option value="{{ worker.id }}">{{ worker.name }} {{ worker.surname }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.name.id_for_label }}">Input your name</label>
+                                        {{ form.name }}
+                                        <div class="invalid-feedback">
+                                            {{ form.name.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.surname.id_for_label }}">Input your surname</label>
+                                        {{ form.surname }}
+                                        <div class="invalid-feedback">
+                                            {{ form.surname.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.phone.id_for_label }}">Input your phone</label>
+                                        {{ form.phone }}
+                                        <div class="invalid-feedback">
+                                            {{ form.phone.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.email.id_for_label }}">Input your email</label>
+                                        {{ form.email }}
+                                        <div class="invalid-feedback">
+                                            {{ form.email.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.adress.id_for_label }}">Input your address</label>
+                                        {{ form.address }}
+                                        <div class="invalid-feedback">
+                                            {{ form.address.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.city.id_for_label }}">Input your city</label>
+                                        {{ form.city }}
+                                        <div class="invalid-feedback">
+                                            {{ form.city.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.state.id_for_label }}">Input your state</label>
+                                        {{ form.state }}
+                                        <div class="invalid-feedback">
+                                            {{ form.state.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.zipcode.id_for_label }}">Input your zip code</label>
+                                        {{ form.zipcode }}
+                                        <div class="invalid-feedback">
+                                            {{ form.zipcode.errors }}
+                                        </div>
+                                    <div>
+                                    <div class="form-group">
+                                        <label for="{{ form.date.id_for_label }}">Select a date</label>
+                                        {{ form.date }}
+                                        <div class="invalid-feedback">
+                                            {{ form.date.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.time.id_for_label }}">Select a time</label>
+                                        {{ form.time }}
+                                        <div class="invalid-feedback">
+                                            {{ form.time.errors }}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Record</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <td>{{ worker.category }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+        <h1 style='margin-top: 120px;'>No workerers found</h1>
+    {% endif %}
+{% endblock %}
