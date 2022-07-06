@@ -1,0 +1,8 @@
+.vscode
+venv
+.editorconfig
+.pylintrc
+**/__pycache__
+manager_system/manager_system/static/bootstrap/
+manager_system/static/bootstrap/
+manager_system/static/admin/
