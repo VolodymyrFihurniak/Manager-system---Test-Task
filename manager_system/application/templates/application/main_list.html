@@ -14,12 +14,14 @@
             <th scope="col">Surname</th>
             <th scope="col"> <div class="btn-group dropstart">
                 <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                      Date | Hours
+                      Date
                 </button>
                 <ul class="dropdown-menu">
-                    {% for hour in hours %}
-                        <li><a class="dropdown-item" href="{{ hour.get_absolute_url }}">{{ hour }}</a></li>
-                    {% endfor %}
+                        <form action={% url 'date' %} method='post'>
+                            {% csrf_token %}
+                            <li><input type="date" name="date" class="dropdown-item" placeholder="Date" /></li>
+                            <li><input type="submit" id='date' class="dropdown-item bg-warning" /></li>
+                        </form>
                 </ul>
               </div>
             </th>
@@ -46,7 +48,11 @@
                 <th scope="row">{{ worker.id }}</th>
                 <td>{{ worker.name }}</td>
                 <td>{{ worker.surname }}</td>
-                <td>{{ worker.hours }}</td>
+                <td>
+                    {% for date in worker.date.all %}
+                        <p>{{date}}</p>
+                    {% endfor %}
+                </td>
                 <td>{{ worker.price }}</td>
                 <td>{{ worker.rating }}</td>
                 <th scope="col"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_{{worker.id}}">Click</button></th>
@@ -66,7 +72,17 @@
                                 <p>Phone: {{ worker.phone }}</p>
                                 <p>Email: {{ worker.email }}</p>
                                 <p>Address: {{ worker.address }}</p>
-                                <p>Hours: {{ worker.hours }}</p>
+                                {% for per in worker.date.all %}
+                                    <p>Date: {{ per.period }}</p>
+                                    {% for i in per.period.worker_time.all %}
+                                        {% if i.day_str %}
+                                            <p>Day: {{ i.day_str }}</p>
+                                        {% else %}
+                                            <p>Day: {{ i.day_num }}</p>
+                                        {% endif %}
+                                        <p>Time: {{ i.start_time }} - {{ i.end_time }}</p>
+                                    {% endfor %}
+                                {% endfor %}
                                 <p>Description: {{ worker.description }}</p>
                                 <p>Rating: {{ worker.rating }}</p>
                                 <p>Reviews: {{ worker.reviews }}</p>
