@@ -25,8 +25,7 @@ class Worker(models.Model):
     surname = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
-    hours = models.ForeignKey(
-        'Schedule', on_delete=models.CASCADE, related_name='hours', null=True)
+    date = models.ManyToManyField('Schedule', blank=True)
     price = models.CharField(max_length=100)
     address = models.ForeignKey(
         'Location', on_delete=models.CASCADE, related_name='address', null=True)
@@ -60,7 +59,6 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse("category", kwargs={"category_id": self.pk})
 
-
     class Meta:
         db_table = "category"
         verbose_name = "Category"
@@ -68,20 +66,57 @@ class Category(models.Model):
 
 
 class Schedule(models.Model):
-    day = models.DateField(max_length=100)
-    start_time = models.TimeField(max_length=100)
-    end_time = models.TimeField(max_length=100)
+    period = models.ForeignKey(
+        'Period', on_delete=models.CASCADE, related_name='period', null=True)
 
     def __str__(self):
-        return self.day.strftime("%Y-%m-%d") + ", " + self.start_time.strftime("%H:%M") + " - " + self.end_time.strftime("%H:%M")
+        return self.period.start_period.strftime("%Y-%m-%d") + \
+            " - " + self.period.end_period.strftime("%Y-%m-%d")
 
-    def get_absolute_url(self):
-        return reverse("date", kwargs={"hours_id": self.pk})
 
     class Meta:
         db_table = "schedule"
         verbose_name = "Schedule"
         verbose_name_plural = "Schedules"
+
+
+class Period(models.Model):
+    start_period = models.DateField(auto_now=False, auto_now_add=False)
+    end_period = models.DateField(auto_now=False, auto_now_add=False)
+    worker_time = models.ManyToManyField(
+        'WorkerTime', related_name='worker_time', blank=True)
+
+    class Meta:
+        db_table = "period"
+        verbose_name = "Period"
+        verbose_name_plural = "Periods"
+        ordering = ['id']
+
+    def __str__(self):
+        return self.start_period.strftime("%Y-%m-%d") + " - " + self.end_period.strftime("%Y-%m-%d")
+
+
+class WorkerTime(models.Model):
+    day_str = models.CharField(max_length=100, null=True, blank=True)
+    day_num = models.DateField(
+        auto_now=False, auto_now_add=False, null=True, blank=True)
+    start_time = models.TimeField(auto_now=False, auto_now_add=False)
+    end_time = models.TimeField(auto_now=False, auto_now_add=False)
+    additional_hours_start_time = models.TimeField(
+        auto_now=False, auto_now_add=False, null=True, blank=True)
+    additional_hours_end_time = models.TimeField(
+        auto_now=False, auto_now_add=False, null=True, blank=True)
+
+    class Meta:
+        db_table = "worker_time"
+        verbose_name = "WorkerTime"
+        verbose_name_plural = "WorkerTimes"
+
+    def __str__(self):
+        return self.day_str + " - " + self.start_time.strftime("%H:%M") + \
+            " - " + self.end_time.strftime("%H:%M") if self.day_str else \
+            self.start_time.strftime("%H:%M") + " - " + \
+            self.end_time.strftime("%H:%M")
 
 
 class Appointment(models.Model):
