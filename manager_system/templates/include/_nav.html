@@ -12,6 +12,23 @@
           <li class="nav-item">
             <a class="nav-link" href={% url 'active_record' %} aria-current="page">Active records</a>
           </li>
+          {% if request.user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page">{{ user.username }} | </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href={% url 'logout' %}>Logout</a>
+            </li>
+          {% else %}
+            <div class="d-flex">
+                <li class="nav-item">
+                    <a class="nav-link" href={% url 'register' %} aria-current="page">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href={% url 'login' %} aria-current="page">Login</a>
+                </li>
+            </div>
+        {% endif %}
         </ul>
       </div>
     </div>
