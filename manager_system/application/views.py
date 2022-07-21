@@ -1,12 +1,16 @@
-from functools import partial
 from django.shortcuts import redirect, render
 from django.views.generic import ListView
 from django.db.models import Q
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser
 from .models import Category, Worker, Appointment, \
-    Location, Customer, Schedule, Period, WorkerTime
+    Location, Customer, Schedule, Period
 from .serializers import WorkerSerializer, CategorySerializer, \
     AppointmentSerializer, LocationSerializer, CustomerSerializer, \
     ScheduleSerializer, PeriodSerializer, WorkerTimeSerializer
@@ -204,11 +208,17 @@ def record(request):
 
 
 class ApiView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         return Response({'status': 'ok'})
 
 
 class ApiWorkersView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         workers = Worker.objects.all()
         serializer = WorkerSerializer(workers, many=True)
@@ -216,6 +226,9 @@ class ApiWorkersView(APIView):
 
 
 class ApiWorkersCategoryView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, category_id):
         workers = Worker.objects.filter(category_id=category_id)
         serializer = WorkerSerializer(workers, many=True)
@@ -223,6 +236,9 @@ class ApiWorkersCategoryView(APIView):
 
 
 class ApiWorkerView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         worker = Worker.objects.get(id=pk)
         serializer = WorkerSerializer(worker)
@@ -259,6 +275,9 @@ class ApiWorkerView(APIView):
 
 
 class ApiWorkerCreateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def post(self, request):
         serializer = WorkerSerializer(data=request.data)
         if serializer.is_valid():
@@ -268,6 +287,9 @@ class ApiWorkerCreateView(APIView):
 
 
 class ApiCategorysView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
@@ -275,6 +297,9 @@ class ApiCategorysView(APIView):
 
 
 class ApiCategoryView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         category = Category.objects.get(id=pk)
         serializer = CategorySerializer(category)
@@ -312,6 +337,9 @@ class ApiCategoryView(APIView):
 
 
 class ApiCategoryCreateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
@@ -321,6 +349,9 @@ class ApiCategoryCreateView(APIView):
 
 
 class ApiAppointmentsView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         appointments = Appointment.objects.all()
         serializer = AppointmentSerializer(appointments, many=True)
@@ -335,6 +366,9 @@ class ApiAppointmentsView(APIView):
 
 
 class ApiAppointmentView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         appointment = Appointment.objects.get(id=pk)
         serializer = AppointmentSerializer(appointment)
@@ -372,6 +406,9 @@ class ApiAppointmentView(APIView):
 
 
 class ApiAppointmentCreateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def post(self, request):
         serializer = AppointmentSerializer(data=request.data)
         if serializer.is_valid():
@@ -381,6 +418,9 @@ class ApiAppointmentCreateView(APIView):
 
 
 class ApiLocationsView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         locations = Location.objects.all()
         serializer = LocationSerializer(locations, many=True)
@@ -395,6 +435,9 @@ class ApiLocationsView(APIView):
 
 
 class ApiLocationView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         location = Location.objects.get(id=pk)
         serializer = LocationSerializer(location)
@@ -432,6 +475,9 @@ class ApiLocationView(APIView):
 
 
 class ApiLocationCreateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def post(self, request):
         serializer = LocationSerializer(data=request.data)
         if serializer.is_valid():
@@ -441,6 +487,9 @@ class ApiLocationCreateView(APIView):
 
 
 class ApiSchedulesView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         schedules = Schedule.objects.all()
         serializer = ScheduleSerializer(schedules, many=True)
@@ -455,6 +504,9 @@ class ApiSchedulesView(APIView):
 
 
 class ApiSchedulePeriodView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         period = Period.objects.get(id=pk)
         serializer = PeriodSerializer(period)
@@ -492,6 +544,9 @@ class ApiSchedulePeriodView(APIView):
 
 
 class ApiSchedulePeriodWorkerTimeView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk, worker_pk):
         period = Period.objects.get(id=pk)
         worker_time = period.worker_time.get(id=worker_pk)
@@ -534,6 +589,9 @@ class ApiSchedulePeriodWorkerTimeView(APIView):
 
 
 class ApiSchedulesDateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, date):
         schedule = Schedule.objects.filter(Q(period__start_period=date) |
                                            Q(period__end_period=date))
@@ -542,6 +600,9 @@ class ApiSchedulesDateView(APIView):
 
 
 class ApiCustomersView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request):
         customers = Customer.objects.all()
         serializer = CustomerSerializer(customers, many=True)
@@ -556,6 +617,9 @@ class ApiCustomersView(APIView):
 
 
 class ApiCustomerView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def get(self, request, pk):
         customer = Customer.objects.get(id=pk)
         serializer = CustomerSerializer(customer)
@@ -593,9 +657,46 @@ class ApiCustomerView(APIView):
 
 
 class ApiCustomerCreateView(APIView):
+
+    permission_classes = (IsAdminUser,)
+
     def post(self, request):
         serializer = CustomerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'You successfully register!')
+            return redirect('login')
+    else:
+        messages.error(request, 'Something went wrong!')
+        form = UserCreationForm()
+    return render(request, 'application/register.html', {'form': form})
+
+
+def auth_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+
+    else:
+        form = AuthenticationForm()
+    return render(request, 'application/login.html', {'form': form})
+
+
+def auth_logout(request):
+    logout(request)
+    return redirect('home')

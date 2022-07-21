@@ -48,6 +48,9 @@ urlpatterns = [
 
     path('category/<int:category_id>',
          views.CategoryView.as_view(), name='category'),
+    path('register/', views.register, name='register'),
+    path('login/', views.auth_login, name='login'),
+    path('logout/', views.auth_logout, name='logout'),
     path('date/', views.DateView.as_view(), name='date'),
     path('date/<str:date_str>', views.DateView.as_view(), name='date_view'),
     path('record/', views.record, name='record'),
